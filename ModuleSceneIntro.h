@@ -66,7 +66,9 @@ public:
 
 	int progression;
 	int kept_load;
+
 	Timer timer;
+	Uint32 cronometer;
 
 	scene_st state;
 

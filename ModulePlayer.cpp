@@ -194,10 +194,9 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->Render();
 	loadbox->Render();
 
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) 
 		Reset();
-		control_enabled = true;
-	}
+	
 	
 
 	char title[80];
@@ -224,7 +223,6 @@ void ModulePlayer::FillLoad(int load, vec3 pos) {
 
 void ModulePlayer::Reset() {
 
-	control_enabled = false;
 
 	btTransform t;
 	t.setIdentity();
@@ -248,6 +246,12 @@ void ModulePlayer::Reset() {
 	}
 
 	vehicle->Brake(5000.f);
+
+	App->scene_intro->state = STARTING;
+	App->scene_intro->cronometer = App->scene_intro->progression = 0;
+	App->scene_intro->timer.Start();
+
+	control_enabled = false;
 	
 
 }

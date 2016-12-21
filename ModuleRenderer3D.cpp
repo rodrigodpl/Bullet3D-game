@@ -124,8 +124,9 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
-	char str[20];
+	char str[30];
 	str[0] = '\0';
+	float time_left;
 
 	switch (App->scene_intro->state) {
 
@@ -152,10 +153,27 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 		strcat(str, "Progress: ");
 
 		char prog_str[10];
-		sprintf(prog_str, "%d/100\0", App->scene_intro->progression);
+		sprintf(prog_str, "%d / 100 \0", App->scene_intro->progression);
 		strcat(str, prog_str);
 
 		DrawUI(str, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 100, White);
+
+		str[0] = '\0';
+		strcat(str, "Time left: ");
+
+		char time_str[10];
+		time_left = (float)(180000 - App->scene_intro->timer.Read()) / 1000;
+		sprintf(time_str, "%f\0", time_left);
+		strcat(str, time_str);
+
+
+		if (time_left > 60)
+			DrawUI(str, 200, SCREEN_HEIGHT - 100, White);
+		else if (time_left > 30)
+			DrawUI(str, 200, SCREEN_HEIGHT - 100, Orange);
+		else
+			DrawUI(str, 200, SCREEN_HEIGHT - 100, Red);
+
 
 		str[0] = '\0';
 		strcat(str, "Load: ");
@@ -175,7 +193,6 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	case LOSE:
 		
-
 		strcat(str, "You Lost!\0"); 
 		DrawUI(str, 600, 600, White);
 
@@ -184,7 +201,45 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	case WIN:
 
 		strcat(str, "You Won!\0");
-		DrawUI(str, 600, 600, White);
+		DrawUI(str, 600, 900, White);
+		
+		if (App->scene_intro->timer.Read() > 4000) {
+
+			str[0] = '\0';
+			strcat(str, "Kept load: ");
+
+			char load_score_str[30];
+			sprintf(load_score_str, "  %d * 100 = %d\0", App->scene_intro->kept_load, App->scene_intro->kept_load * 100);
+			strcat(str, load_score_str);
+
+			DrawUI(str, 600, 800, White);
+
+		}
+		if (App->scene_intro->timer.Read() > 6000) {
+
+			str[0] = '\0';
+			strcat(str, "Time left: ");
+
+			char time_score_str[30];
+			sprintf(time_score_str, " %d * 50 = %d\0", (180000 - App->scene_intro->cronometer) / 1000, (180000 - App->scene_intro->cronometer) * 50 / 1000);
+			strcat(str, time_score_str);
+
+			DrawUI(str, 600, 750, White);
+
+		}
+		if (App->scene_intro->timer.Read() > 8000) {
+
+			str[0] = '\0';
+			strcat(str, "Score: ");
+
+			char score_str[30];
+			sprintf(score_str, " %d + %d = %d\0", App->scene_intro->kept_load * 100, (180000 - App->scene_intro->cronometer) * 50 / 1000, (App->scene_intro->kept_load * 100) + ((180000 - App->scene_intro->cronometer) * 50 / 1000));
+			strcat(str, score_str);
+
+			DrawUI(str, 600, 700, White);
+
+		}
+
 		break;
 	}
 

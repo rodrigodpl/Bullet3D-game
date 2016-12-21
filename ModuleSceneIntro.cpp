@@ -22,7 +22,7 @@ bool ModuleSceneIntro::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
-	progression = 0, kept_load = 0;
+	progression = 0, kept_load = 0, cronometer = 0;
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
@@ -84,37 +84,34 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	case PLAYING:
 
-		if (timer.Read() > 500) {
+		if (timer.Read() > cronometer + 500) {
+
+			cronometer = timer.Read();
 
 			kept_load = App->player->CheckLoad();
 
 			if (kept_load == 0)
 				state = LOSE;
+			else if (progression > 100) 
+				state = WIN;
+			
 
-			timer.Start();
 		}
-
-		if (progression > 100)
-			state = WIN;
-
 
 		break;
 
 	case LOSE:
 
-		if (App->player->CheckLoad() > 0 && timer.Read() < 2000)
+		if (App->player->CheckLoad() > 0 && timer.Read() <  cronometer + 2000)
 			state = PLAYING;
-
-		if (timer.Read() > 5000) {
-
+		else if (timer.Read() > cronometer + 5000) 
 			App->player->Reset();
-			state = STARTING;
-			timer.Start();
-
-		}
+		
 		break;
 
-	case WIN: break;
+	case WIN: 
+		
+		break;
 
 	}
 	
